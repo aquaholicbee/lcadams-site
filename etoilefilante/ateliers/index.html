@@ -1,1 +1,78 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ateliers · Étoile filante</title><style>body{font-family:system-ui;margin:0;background:#f7f9f7;color:#24312d}main{max-width:850px;margin:auto;padding:56px 24px}.box{background:white;padding:22px;border:1px solid #dde5e1;border-radius:14px}a{color:#245548}</style></head><body><main><p><a href="/etoilefilante/">← Espace parents</a></p><h1>Les ateliers</h1><div class="box"><p>Le portail des ateliers sera installé ici.</p><p>Pour l’instant, utilisez le portail actuel.</p></div></main></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ateliers · Étoile filante</title>
+<style>
+:root{--g:#2f6f5e;--d:#245548;--m:#65716d;--l:#dde5e1;--b:#f7f9f7;--s:#e8f2ee;--o:#fff7ed}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--b);color:#24312d;line-height:1.5}
+.hero{background:linear-gradient(135deg,#2f6f5e,#438873);color:white;padding:44px 20px}.hero>div,.wrap{max-width:960px;margin:auto}.hero h1{font-size:clamp(34px,7vw,52px);margin:5px 0}.hero p{max-width:700px}
+.wrap{padding:26px 18px 70px}.back{display:inline-block;margin-bottom:18px;color:var(--d)}
+.card{background:white;border:1px solid var(--l);border-radius:16px;padding:22px;margin:18px 0}.card h2{margin-top:0}.muted,.hint{color:var(--m)}.hint{font-size:.92rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}
+label{display:block;font-weight:650;margin-top:14px}input,textarea,select{width:100%;font:inherit;padding:11px;margin-top:5px;border:1px solid #cbd5d0;border-radius:9px;background:white}textarea{min-height:100px;resize:vertical}
+.checks label,.radios label{font-weight:400;display:flex;gap:9px;align-items:flex-start;margin:9px 0}.checks input,.radios input{width:auto;margin-top:5px}
+.note{background:var(--s);border-radius:12px;padding:14px;margin-top:10px}.autonomy{background:var(--o);border-left:4px solid #d97706;padding:12px 14px;margin-top:9px;border-radius:8px}
+button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer;background:var(--g);color:white}.secondary{background:var(--s);color:var(--d)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.status{margin-top:12px;font-weight:650}
+@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero"><div><small>ÉTOILE FILANTE · COMITÉ ATELIERS</small><h1>Proposer un atelier</h1><p>Partagez une activité, une compétence ou une idée avec les élèves. Votre proposition sera ensuite coordonnée avec le comité Ateliers et l’école.</p></div></header>
+<main class="wrap">
+<a class="back" href="../">← Espace parents</a>
+<form id="atelierForm">
+<section class="card">
+<h2>1. Vos coordonnées</h2>
+<div class="grid">
+<label>Votre nom<input name="name" autocomplete="name" required></label>
+<label>Votre courriel<input name="email" type="email" autocomplete="email" required></label>
+</div>
+</section>
+<section class="card">
+<h2>2. Votre atelier</h2>
+<label>Titre ou idée d’atelier<input name="title" required></label>
+<label>Que feront les enfants?<textarea name="description" placeholder="Décrivez brièvement l’activité, ce que les élèves feront ou apprendront…"></textarea></label>
+<label>À quelles dates seriez-vous disponible?</label>
+<div id="dates" class="checks"><p class="muted">Les prochaines dates seront chargées à partir du calendrier des ateliers.</p></div>
+<div class="grid">
+<label>Local ou espace souhaité<select name="space"><option>Flexible</option><option>Classe</option><option>Cuisine</option><option>Gymnase</option><option>Extérieur</option></select></label>
+<label>Financement ou achat de matériel requis?<select name="fundingNeeded"><option>Non</option><option>Oui</option><option>Je ne sais pas encore</option></select></label>
+</div>
+<label>Matériel, besoins particuliers ou précisions<textarea name="materials"></textarea></label>
+</section>
+<section class="card">
+<h2>3. Qui animera avec vous?</h2>
+<p class="muted">Indiquez ici les personnes qui font déjà partie de votre proposition. Vous pouvez laisser ces champs vides.</p>
+<label>Co-animateur(s) parent(s)<input name="parentCoanimators" placeholder="Nom(s) des autres adultes"></label>
+<p class="hint">Si vous avez déjà prévu d’animer avec un autre parent ou adulte, indiquez son nom ici.</p>
+<label>Co-animateur(s) élève(s)<input name="studentCoanimators" placeholder="Nom(s) et classe(s) des élèves"></label>
+<div class="autonomy"><strong>Petit rappel :</strong> les ateliers sont aussi une occasion pour les élèves de développer leur autonomie. Lorsque possible, nous encourageons donc les parents à animer indépendamment de leur propre enfant. La co-animation parent-enfant est surtout destinée aux élèves du 1er cycle ou lorsqu’elle est particulièrement pertinente à l’activité.</div>
+<label>Aimeriez-vous qu’un autre parent se joigne à vous?</label>
+<div class="radios">
+<label><input type="radio" name="helpWanted" value="Non" checked> Non, mon équipe est complète.</label>
+<label><input type="radio" name="helpWanted" value="Oui"> Oui, j’aimerais qu’un autre parent puisse offrir son aide.</label>
+</div>
+</section>
+<section class="card">
+<h2>4. Autre chose?</h2>
+<label>Notes pour le comité<textarea name="notes" placeholder="Contraintes, questions, contexte ou autres informations utiles…"></textarea></label>
+<div class="note">Une soumission est une <strong>proposition</strong>, et non une inscription confirmée. Le comité Ateliers vous confirmera ensuite la date, le local et les rôles.</div>
+<div class="actions"><button type="submit">Envoyer ma proposition</button></div>
+<div id="status" class="status" aria-live="polite"></div>
+</section>
+</form>
+</main>
+<script>
+// The public page is ready for the Apps Script JSON endpoint.
+// Set API_URL after the updated Apps Script web app is deployed.
+const API_URL="";
+const fallbackDates=[];
+function fmt(v){const d=new Date(v+"T12:00:00");return isNaN(d)?v:d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});}
+function renderDates(dates){const el=document.getElementById("dates");const future=(dates||[]).filter(Boolean);el.innerHTML=future.length?future.map(d=>`<label><input type="checkbox" name="preferredDates" value="${d}"> ${fmt(d)}</label>`).join(""):'<p class="muted">Les dates seront ajoutées sous peu. Vous pouvez tout de même préparer votre proposition.</p>';}
+async function loadDates(){if(!API_URL){renderDates(fallbackDates);return;}try{const r=await fetch(API_URL+"?action=portal");const d=await r.json();renderDates((d.weeks||[]).map(w=>w.date));}catch(e){renderDates(fallbackDates);}}
+document.getElementById("atelierForm").addEventListener("submit",async e=>{e.preventDefault();const st=document.getElementById("status");if(!API_URL){st.textContent="Le nouveau formulaire est prêt, mais la connexion au portail doit encore être activée avant l’envoi.";return;}const fd=new FormData(e.target);const payload=Object.fromEntries(fd.entries());payload.preferredDates=fd.getAll("preferredDates");if(!payload.preferredDates.length){st.textContent="Veuillez choisir au moins une date.";return;}st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitProposal",payload})});const out=await r.json();if(!r.ok||out.ok===false)throw new Error(out.message||"Erreur");st.textContent=out.message||"Merci! Votre proposition a été envoyée.";e.target.reset();}catch(err){st.textContent="Impossible d’envoyer la proposition pour le moment. Veuillez réessayer ou écrire au comité Ateliers.";}});loadDates();
+</script>
+</body></html>
