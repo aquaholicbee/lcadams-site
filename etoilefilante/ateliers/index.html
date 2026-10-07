@@ -68,7 +68,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
 <script>
 // The public page is ready for the Apps Script JSON endpoint.
 // Set API_URL after the updated Apps Script web app is deployed.
-const API_URL="";
+const API_URL="https://script.google.com/macros/s/AKfycbxQmBQG6LumcOl-gZa234wYNLeau8VGIRHLRAJETe1uHSO0Z6nMD2SFrc3H3uCci_A/exec";
 const fallbackDates=[];
 function fmt(v){const d=new Date(v+"T12:00:00");return isNaN(d)?v:d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});}
 function renderDates(dates){const el=document.getElementById("dates");const future=(dates||[]).filter(Boolean);el.innerHTML=future.length?future.map(d=>`<label><input type="checkbox" name="preferredDates" value="${d}"> ${fmt(d)}</label>`).join(""):'<p class="muted">Les dates seront ajoutées sous peu. Vous pouvez tout de même préparer votre proposition.</p>';}
