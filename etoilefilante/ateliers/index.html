@@ -7,7 +7,7 @@
 <style>
 :root{--g:#2f6f5e;--d:#245548;--m:#65716d;--l:#dde5e1;--b:#f7f9f7;--s:#e8f2ee;--o:#fff7ed}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--b);color:#24312d;line-height:1.5}
-.hero{background:linear-gradient(135deg,#2f6f5e,#438873);color:white;padding:44px 20px}.hero>div,.wrap{max-width:960px;margin:auto}.hero h1{font-size:clamp(34px,7vw,52px);margin:5px 0}.hero p{max-width:700px}
+.hero{background:linear-gradient(135deg,#2f6f5e,#438873);color:white;padding:44px 20px}.hero>div,.wrap{max-width:960px;margin:auto}.hero h1{font-size:clamp(34px,7vw,52px);margin:5px 0}.hero p{max-width:700px}.hero-cta{display:inline-block;margin-top:12px;background:white;color:var(--d);padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:800}.hero-cta:hover{opacity:.94}
 .wrap{padding:26px 18px 70px}.back{display:inline-block;margin-bottom:18px;color:var(--d)}
 .card{background:white;border:1px solid var(--l);border-radius:16px;padding:22px;margin:18px 0}.card h2{margin-top:0}.muted,.hint{color:var(--m)}.hint{font-size:.92rem}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}
@@ -20,7 +20,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
 </style>
 </head>
 <body>
-<header class="hero"><div><small>ÉTOILE FILANTE · COMITÉ ATELIERS</small><h1>Les ateliers</h1><p>Proposer une activité, donner un coup de main, superviser un atelier d’élèves ou trouver des idées et ressources pour participer.</p></div></header>
+<header class="hero"><div><small>ÉTOILE FILANTE · COMITÉ ATELIERS</small><h1>Les ateliers</h1><p>Proposer une activité, donner un coup de main, superviser un atelier d’élèves ou trouver des idées et ressources pour participer.</p><a class="hero-cta" href="#proposer" onclick="openProposal()">💡 Proposer un atelier</a></div></header>
 <main class="wrap">
 <a class="back" href="/etoilefilante/">← Espace parents</a><section class="card announce"><h2>📣 À venir</h2><h3>Un bloc d’ateliers de 3 à 4 semaines en février</h3><p>Nous commençons à réfléchir à une période spéciale d’ateliers de <strong>3 à 4 semaines en février</strong>. Nous cherchons des idées de projets qui pourraient se développer sur plusieurs semaines, ainsi qu’une ou plusieurs personnes intéressées à aider à coordonner cette période.</p><p>Vous avez une idée — même encore très préliminaire? Gardez-la en tête ou partagez-la avec le comité. Plus de détails suivront.</p><hr><h3>Rencontre ouverte du comité Ateliers</h3><p>Le comité Ateliers organisera bientôt une rencontre ouverte pour échanger sur les ateliers, les idées à venir et les façons de participer.</p><p class="muted">Si vous avez déjà reçu un courriel du comité Ateliers, vous recevrez l’invitation. Sinon, ajoutez votre courriel ci-dessous et nous vous enverrons les détails dès que la date sera confirmée.</p><form id="meetingForm" class="signup-inline"><label>Votre courriel<input type="email" name="email" required placeholder="vous@exemple.com"></label><button type="submit">Recevoir l’invitation</button></form><div id="meetingStatus" class="status"></div></section><section class="card"><h2>Participer aux ateliers</h2><p><strong>🙌 Aider :</strong> les ateliers confirmés qui cherchent un co-animateur apparaîtront ici.</p><div id="helpList"><p class="muted">Chargement…</p></div><hr><p><strong>👀 Superviser :</strong> soutenir les ateliers conçus et animés par les élèves.</p><div id="supervisorList"><p class="muted">Chargement…</p></div></section><section class="card"><h2>Ressources pour animer</h2><div class="grid"><div><h3>Idées d’ateliers</h3><p>Des idées simples et adaptables pour différents âges, espaces et niveaux de préparation.</p><p><a href="/etoilefilante/ateliers/ressources/">Explorer les idées →</a></p></div><div><h3>Guide & recommandations</h3><p>Préparer un atelier, favoriser l’autonomie et penser au matériel, au rythme et à la co-animation.</p><p><a href="/etoilefilante/ateliers/ressources/#guide">Voir le guide →</a></p></div></div><div class="note"><strong>Une idée plus grande?</strong> Jardin, club récurrent, nouvel espace, équipement ou autre projet qui dépasse un seul mercredi? <a href="/etoilefilante/ateliers/ressources/#grandes-idees">Partagez-la avec le comité</a>.</div></section><details class="propose" id="proposer"><summary>💡 Proposer un atelier</summary><form id="atelierForm">
 <section class="card">
@@ -67,6 +67,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
 <script>
 // The public page is ready for the Apps Script JSON endpoint.
 // Set API_URL after the updated Apps Script web app is deployed.
+function openProposal(){const d=document.getElementById("proposer");if(d){d.open=true;setTimeout(()=>d.scrollIntoView({behavior:"smooth",block:"start"}),50);}}
 const API_URL="https://script.google.com/macros/s/AKfycbxQmBQG6LumcOl-gZa234wYNLeau8VGIRHLRAJETe1uHSO0Z6nMD2SFrc3H3uCci_A/exec";
 const fallbackDates=[];
 function fmt(v){const d=new Date(v+"T12:00:00");return isNaN(d)?v:d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});}
