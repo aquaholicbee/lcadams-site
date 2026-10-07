@@ -1,1 +1,41 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bazar · Étoile filante</title></head><body><main><h1>Bazar</h1><p>À venir.</p></main></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bazar · Étoile filante</title>
+<style>
+:root{--g:#2f6f5e;--d:#245548;--m:#65716d;--l:#dde5e1;--b:#f7f9f7;--s:#e8f2ee}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--b);color:#24312d;line-height:1.5}
+.hero{background:linear-gradient(135deg,#2f6f5e,#438873);color:#fff;padding:42px 20px}.hero div,main{max-width:850px;margin:auto}.hero h1{font-size:clamp(34px,7vw,50px);margin:5px 0}
+main{padding:28px 18px 70px}.card{background:#fff;border:1px solid var(--l);border-radius:16px;padding:22px;margin:18px 0}
+a{color:var(--d)}label{display:block;font-weight:650;margin-top:14px}input,textarea{font:inherit;border:1px solid #cbd5d0;border-radius:9px;padding:11px;width:100%;margin-top:5px}
+.checks label{display:flex;gap:10px;font-weight:400;align-items:flex-start;margin:12px 0}.checks input{width:auto;margin-top:5px}.checks strong{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.hint{color:var(--m);font-size:.92rem}.note{background:var(--s);padding:14px;border-radius:11px}
+button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:700;background:var(--g);color:#fff;cursor:pointer}.status{font-weight:650;margin-top:12px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header class="hero"><div><small>ÉTOILE FILANTE</small><h1>Bazar</h1><p>Le bazar prend beaucoup de petites et grandes contributions. Dites-nous simplement ce qui pourrait vous intéresser — ce formulaire sert à mesurer l’intérêt, pas à vous engager à un horaire précis.</p></div></header>
+<main>
+<p><a href="/etoilefilante/">← Espace parents</a></p>
+<form id="bazarForm">
+<section class="card"><h2>Vos coordonnées</h2><div class="grid"><label>Votre nom<input name="name" required autocomplete="name"></label><label>Votre courriel<input name="email" type="email" required autocomplete="email"></label></div></section>
+<section class="card"><h2>Comment aimeriez-vous participer?</h2><p class="hint">Cochez tout ce qui pourrait vous intéresser.</p><div class="checks">
+<label><input type="checkbox" name="interests" value="Ateliers de création à l’école"><span><strong>Animer des ateliers de création à l’école</strong>Créer avec les élèves, pendant les périodes d’ateliers, des choses qui pourraient être vendues au bazar.</span></label>
+<label><input type="checkbox" name="interests" value="Sessions de création soir / fin de semaine"><span><strong>Sessions de création en soirée ou la fin de semaine</strong>Participer à des rencontres occasionnelles entre adultes/familles pour fabriquer des choses à vendre.</span></label>
+<label><input type="checkbox" name="interests" value="Solliciter des dons"><span><strong>Solliciter des dons</strong>Contacter des commerces, familles ou partenaires potentiels.</span></label>
+<label><input type="checkbox" name="interests" value="Trier et préparer les dons"><span><strong>Trier et préparer les dons</strong>Aider pendant la semaine précédant le bazar jusqu’au jour même.</span></label>
+<label><input type="checkbox" name="interests" value="Aide le jour du bazar"><span><strong>Aider le jour du bazar</strong>Disponibilité possible entre 8 h et 20 h — installation, vente, rangement ou autres besoins.</span></label>
+<label><input type="checkbox" name="interests" value="Équipe pâtisserie"><span><strong>Équipe pâtisserie</strong>Préparer des pâtisseries ou autres produits pour le bazar.</span></label>
+<label><input type="checkbox" name="interests" value="Brainstorming / planification"><span><strong>Brainstorming et planification</strong>Participer à une ou plusieurs séances d’idées et d’organisation.</span></label>
+<label><input type="checkbox" name="interests" value="Autre"><span><strong>Autre / j’ai une idée</strong>Une autre façon de contribuer? Dites-nous laquelle ci-dessous.</span></label>
+</div>
+<label>Suggestions, idées ou précisions<textarea name="notes" placeholder="Une idée pour le bazar, une compétence particulière, une préférence, une disponibilité générale…"></textarea></label>
+<div class="note">Il s’agit d’une <strong>manifestation d’intérêt</strong>. Nous vous recontacterons lorsque les équipes et besoins seront plus précis.</div>
+<p><button type="submit">Envoyer mes intérêts</button></p><div id="status" class="status"></div>
+</section></form>
+</main>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbxQmBQG6LumcOl-gZa234wYNLeau8VGIRHLRAJETe1uHSO0Z6nMD2SFrc3H3uCci_A/exec";
+document.getElementById("bazarForm").addEventListener("submit",async e=>{e.preventDefault();const st=document.getElementById("status");const fd=new FormData(e.target);const interests=fd.getAll("interests");if(!interests.length){st.textContent="Choisissez au moins une façon de participer.";return;}const payload={name:fd.get("name"),email:fd.get("email"),interests,notes:fd.get("notes")};st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitBazarInterest",payload})});const out=await r.json();if(!r.ok||out.ok!==true)throw new Error(out.message||"Erreur");e.target.innerHTML='<section class="card"><h2>Merci!</h2><p>Nous avons bien reçu vos intérêts pour le bazar. Nous vous recontacterons lorsque les équipes et besoins seront plus précis.</p><p class="hint">Pour toute question ou modification : ateliersetoilefilante@gmail.com</p></section>';}catch(err){st.textContent="Le formulaire est prêt, mais la connexion pour enregistrer les réponses doit encore être activée. Pour l’instant, écrivez à ateliersetoilefilante@gmail.com.";}});</script>
+</body></html>
