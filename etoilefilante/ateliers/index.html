@@ -85,7 +85,7 @@ function renderUpcoming(d){
    const atelierHtml=ateliers.length?ateliers.map(a=>{
      const count=adultAnimatorCount(a),spots=Math.max(0,3-count);
      const names=[a.lead,a.parentCoanimators].filter(Boolean).join(", ");
-     const help=spots>0?'<div class="cohelp"><span>'+spots+' place'+(spots===1?'':'s')+' pour co-animer</span> <button type="button" onclick="offerCoanimate(\''+String(a.id).replace(/'/g,"\\'")+'\',\''+w.date+'\',this)">Je peux co-animer</button></div>':'<span class="muted">Équipe d’animation complète</span>';
+     const help=spots>0?'<div class="cohelp"><span>'+spots+' place'+(spots===1?'':'s')+' pour co-animer</span> <button type="button" onclick="offerCoanimate(\''+String(a.id).replace(/'/g,"\\'")+'\',\''+w.date+'\',this)">Je peux co-animer</button></div>':'<span class="muted status-complete">✓ Équipe d’animation complète</span>';
      return '<div class="atelier-item"><strong>'+escHtml(a.title)+'</strong><br><span class="muted">'+escHtml(names||"Animation à confirmer")+'</span>'+help+'</div>';
    }).join(""):'<p class="muted">Aucun atelier confirmé pour le moment.</p>';
    const sup=Number(w.childSupervisorsRemaining)>0?'<div class="atelier-item supervision"><strong>👀 Supervision des ateliers d’élèves</strong><p>'+w.childSupervisorsRemaining+' parent'+(w.childSupervisorsRemaining===1?'':'s')+' recherché'+(w.childSupervisorsRemaining===1?'':'s')+'.</p><button type="button" onclick="offerSupervision(\''+w.date+'\',this)">Je peux superviser</button></div>':'<div class="atelier-item supervision"><strong>👀 Supervision des ateliers d’élèves</strong><p class="muted">Besoins de supervision comblés.</p></div>';
