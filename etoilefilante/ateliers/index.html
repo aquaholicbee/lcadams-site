@@ -67,7 +67,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
 <script>
 // The public page is ready for the Apps Script JSON endpoint.
 // Set API_URL after the updated Apps Script web app is deployed.
-function openProposal(){const d=document.getElementById("proposer");if(d){d.open=true;setTimeout(()=>d.scrollIntoView({behavior:"smooth",block:"start"}),50);}}
+function openProposal(date){const d=document.getElementById("proposer");if(d){d.open=true;if(date){const cb=[...d.querySelectorAll('input[type="checkbox"]')].find(x=>String(x.value||"").includes(date));if(cb)cb.checked=true;}setTimeout(()=>d.scrollIntoView({behavior:"smooth",block:"start"}),50);}}
 const API_URL="https://script.google.com/macros/s/AKfycbxQmBQG6LumcOl-gZa234wYNLeau8VGIRHLRAJETe1uHSO0Z6nMD2SFrc3H3uCci_A/exec";
 const fallbackDates=[];
 function fmt(v){const d=new Date(v+"T12:00:00");return isNaN(d)?v:d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});}
@@ -87,7 +87,7 @@ function renderUpcoming(d){
      const names=[a.lead,a.parentCoanimators].filter(Boolean).join(", ");
      const help=spots>0?'<div class="cohelp"><span>'+spots+' place'+(spots===1?'':'s')+' pour co-animer</span> <button type="button" onclick="offerCoanimate(\''+String(a.id).replace(/'/g,"\\'")+'\',\''+w.date+'\',this)">Je peux co-animer</button></div>':'<span class="muted status-complete">✓ Équipe d’animation complète</span>';
      return '<div class="atelier-item"><strong>'+escHtml(a.title)+'</strong><br><span class="muted">'+escHtml(names||"Animation à confirmer")+'</span>'+help+'</div>';
-   }).join(""):'<p class="muted">Aucun atelier confirmé pour le moment.</p>';
+   }).join(""):'<div class="empty-week"><p class="muted">Aucun atelier confirmé pour le moment.</p>'+(w.proposalOpen?'<button type="button" onclick="openProposal(\''+w.date+'\')">💡 Proposer un atelier pour cette date</button>':'<p class="hint">La période de proposition régulière est fermée pour cette date. Écrivez-nous si vous souhaitez quand même proposer quelque chose.</p>')+'</div>';
    const sup=Number(w.childSupervisorsRemaining)>0?'<div class="atelier-item supervision"><strong>👀 Supervision des ateliers d’élèves</strong><p>'+w.childSupervisorsRemaining+' parent'+(w.childSupervisorsRemaining===1?'':'s')+' recherché'+(w.childSupervisorsRemaining===1?'':'s')+'.</p><button type="button" onclick="offerSupervision(\''+w.date+'\',this)">Je peux superviser</button></div>':'<div class="atelier-item supervision"><strong>👀 Supervision des ateliers d’élèves</strong><p class="muted">Besoins de supervision comblés.</p></div>';
    const extra=Number(w.confirmedCount)>=4?'<p class="hint"><strong>Vous aimeriez quand même animer cette semaine?</strong> Une 5e plage peut parfois être ouverte selon les locaux et l’organisation. Écrivez-nous à <a href="mailto:ateliersetoilefilante@gmail.com">ateliersetoilefilante@gmail.com</a>.</p>':'';
    return '<section class="week-block"><h3>'+fmt(w.date)+'</h3><h4>Ateliers confirmés</h4>'+atelierHtml+sup+extra+'</section>';
