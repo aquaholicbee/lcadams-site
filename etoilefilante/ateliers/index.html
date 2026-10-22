@@ -60,6 +60,16 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
   .top-grid>#avenir{order:1}
   .top-grid>.announce{order:2}
 }
+
+.atelier-item.editing,.supervision.editing{display:block;grid-template-columns:1fr;align-items:stretch}
+.participation-panel{width:100%;max-width:620px}
+.participation-panel h4{margin:0 0 6px}
+.participation-panel .hint{margin:0 0 12px}
+.participation-panel .actions{margin-top:14px}
+.participation-panel .status{font-size:.9rem}
+.signup-result{padding:4px 0}
+.signup-result strong{display:block;color:var(--d)}
+.signup-result p{margin:8px 0 12px}
 </style>
 </head>
 <body>
@@ -115,10 +125,8 @@ const API_URL="https://script.google.com/macros/s/AKfycbxQmBQG6LumcOl-gZa234wYNL
 const fallbackDates=[];
 function fmt(v){const d=new Date(v+"T12:00:00");return isNaN(d)?v:d.toLocaleDateString("fr-CA",{weekday:"long",day:"numeric",month:"long"});}
 function renderDates(items){const el=document.getElementById("dates");const open=(items||[]).filter(x=>x&&x.date);el.innerHTML=open.length?open.map(x=>`<label><input type="checkbox" name="preferredDates" value="${x.date}"> <span>${fmt(x.date)} <span class="hint">— inscription avant le ${fmt(x.cutoff)}</span></span></label>`).join(""):'<p class="muted">Aucune date n’est actuellement ouverte pour proposer un atelier.</p>';}
-async function loadDates(){if(!API_URL){renderDates([]);return;}try{const r=await fetch(API_URL+"?action=portal");const d=await r.json();renderDates((d.weeks||[]).filter(w=>w.proposalOpen===true).map(w=>({date:w.date,cutoff:w.proposalCutoff})));renderUpcoming(d);}catch(e){renderDates([]);}} function localToday(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+"-"+o.month+"-"+o.day;}
+async function loadDates(){if(!API_URL){renderDates([]);return;}try{const r=await fetch(API_URL+"?action=portal&_="+Date.now());const d=await r.json();renderDates((d.weeks||[]).filter(w=>w.proposalOpen===true).map(w=>({date:w.date,cutoff:w.proposalCutoff})));renderUpcoming(d);}catch(e){renderDates([]);}} function localToday(){const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+"-"+o.month+"-"+o.day;}
 function tomorrowString(){const d=new Date(localToday()+"T12:00:00-04:00");d.setDate(d.getDate()+1);return d.toLocaleDateString("en-CA",{timeZone:"America/Toronto"});}
-async function offerCoanimate(atelierId,date,btn){const box=btn.closest(".atelier-item");const title=box.querySelector("strong").textContent;box.innerHTML='<h3>'+escHtml(title)+'</h3><form class="miniForm"><label>Votre nom<input name="name" required></label><label>Votre courriel<input name="email" type="email" required></label><label>Message ou précision (facultatif)<textarea name="message"></textarea></label><div class="actions"><button type="submit">Offrir de co-animer</button><button type="button" class="secondary cancel">Annuler</button></div><div class="status"></div></form>';const form=box.querySelector("form");box.querySelector(".cancel").onclick=()=>loadDates();form.onsubmit=async e=>{e.preventDefault();const st=form.querySelector(".status"),fd=new FormData(form),payload={name:fd.get("name"),email:fd.get("email"),message:fd.get("message")||"",type:"Co-animer",atelierId:atelierId,weekDate:date};st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitParticipation",payload})});const out=await r.json();if(!r.ok||out.ok!==true||!/^P-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"Erreur");box.innerHTML='<h3>Merci!</h3><p>Votre offre de co-animation pour <strong>'+escHtml(title)+'</strong> a été envoyée.</p>';}catch(err){st.textContent="Impossible d’envoyer votre offre pour le moment. Écrivez-nous à ateliersetoilefilante@gmail.com.";}};}
-function offerSupervision(date,btn){const box=btn.parentElement;box.innerHTML='<h3>'+fmt(date)+'</h3><form class="miniForm"><label>Votre nom<input name="name" required></label><label>Votre courriel<input name="email" type="email" required></label><label>Message ou précision (facultatif)<textarea name="message"></textarea></label><div class="actions"><button type="submit">Envoyer mon offre</button><button type="button" class="secondary cancel">Annuler</button></div><div class="status"></div></form>';const form=box.querySelector("form");box.querySelector(".cancel").onclick=()=>loadDates();form.onsubmit=async e=>{e.preventDefault();const st=form.querySelector(".status");const fd=new FormData(form);const payload=Object.fromEntries(fd.entries());payload.type="Supervision des ateliers menés par les enfants";payload.atelierId="";payload.weekDate=date;st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitParticipation",payload})});const out=await r.json();if(!r.ok||out.ok!==true||!/^P-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"Erreur");box.innerHTML='<h3>Merci!</h3><p>Votre offre de supervision pour le <strong>'+fmt(date)+'</strong> a été envoyée. Un courriel de confirmation vous a été envoyé.</p>';}catch(err){st.textContent="Impossible d’envoyer votre offre pour le moment. Écrivez-nous à ateliersetoilefilante@gmail.com.";}};}
 function renderUpcoming(d){
  const el=document.getElementById("upcomingList"),min=tomorrowString();
  const weeks=(d.weeks||[]).filter(w=>w.date>=min);
@@ -138,10 +146,58 @@ function renderUpcoming(d){
 }
 function adultAnimatorCount(a){let n=a.lead?1:0;if(a.parentCoanimators)n+=String(a.parentCoanimators).split(/\s*,\s*|\s*;\s*/).filter(Boolean).length;return n;}
 function escHtml(v){return String(v||"").replace(/[&<>"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];});}
-function offerCoanimate(atelierId,date,btn){const box=btn.closest(".atelier-item");const title=box.querySelector("strong").textContent;box.innerHTML='<h3>'+escHtml(title)+'</h3><form class="miniForm"><label>Votre nom<input name="name" required></label><label>Votre courriel<input name="email" type="email" required></label><label>Message ou précision (facultatif)<textarea name="message"></textarea></label><div class="actions"><button type="submit">Offrir de co-animer</button><button type="button" class="secondary cancel">Annuler</button></div><div class="status"></div></form>';const form=box.querySelector("form");box.querySelector(".cancel").onclick=()=>loadDates();form.onsubmit=async e=>{e.preventDefault();const st=form.querySelector(".status"),fd=new FormData(form),payload={name:fd.get("name"),email:fd.get("email"),message:fd.get("message")||"",type:"Co-animer",atelierId:atelierId,weekDate:date};st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitParticipation",payload})});const out=await r.json();if(!r.ok||out.ok!==true||!/^P-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"Erreur");box.innerHTML='<h3>Merci!</h3><p>Votre offre de co-animation pour <strong>'+escHtml(title)+'</strong> a été envoyée.</p>';}catch(err){st.textContent="Impossible d’envoyer votre offre pour le moment. Écrivez-nous à ateliersetoilefilante@gmail.com.";}};}
-function offerSupervision(date,btn){const box=btn.closest(".atelier-item");box.innerHTML='<h3>Supervision — '+fmt(date)+'</h3><form class="miniForm"><label>Votre nom<input name="name" required></label><label>Votre courriel<input name="email" type="email" required></label><label>Message ou précision (facultatif)<textarea name="message"></textarea></label><div class="actions"><button type="submit">Envoyer mon offre</button><button type="button" class="secondary cancel">Annuler</button></div><div class="status"></div></form>';const form=box.querySelector("form");box.querySelector(".cancel").onclick=()=>loadDates();form.onsubmit=async e=>{e.preventDefault();const st=form.querySelector(".status"),fd=new FormData(form),payload={name:fd.get("name"),email:fd.get("email"),message:fd.get("message")||"",type:"Supervision des ateliers menés par les enfants",atelierId:"",weekDate:date};st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitParticipation",payload})});const out=await r.json();if(!r.ok||out.ok!==true||!/^P-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"Erreur");box.innerHTML='<h3>Merci!</h3><p>Votre offre de supervision pour le <strong>'+fmt(date)+'</strong> a été envoyée.</p>';}catch(err){st.textContent="Impossible d’envoyer votre offre pour le moment. Écrivez-nous à ateliersetoilefilante@gmail.com.";}};}
+
+function offerCoanimate(atelierId,date,btn){
+  return openParticipationForm("Co-animer",atelierId,date,btn);
+}
+function offerSupervision(date,btn){
+  return openParticipationForm("Supervision des ateliers menés par les enfants","",date,btn);
+}
+function openParticipationForm(type,atelierId,date,btn){
+  const isCoanim=type==="Co-animer";
+  const box=btn.closest(isCoanim?".atelier-item":".supervision");
+  if(!box)return;
+  const title=isCoanim?(box.querySelector(".atelier-main strong")?.textContent||"cet atelier"):"les ateliers d’élèves";
+  const previous=box.innerHTML;
+  box.classList.add("editing");
+  box.innerHTML='<div class="participation-panel"><h4>'+escHtml(isCoanim?"Co-animer : "+title:"Supervision : "+fmt(date))+'</h4>'+
+    '<p class="hint">Votre nom apparaîtra dans le calendrier une fois votre participation confirmée.</p>'+
+    '<form class="miniForm"><label>Votre nom<input name="name" autocomplete="name" required></label>'+
+    '<label>Votre courriel<input name="email" type="email" autocomplete="email" required></label>'+
+    '<label>Message ou précision (facultatif)<textarea name="message"></textarea></label>'+
+    '<div class="actions"><button class="compact-action" type="submit">Envoyer mon inscription</button>'+
+    '<button class="compact-action secondary cancel" type="button">Annuler</button></div>'+
+    '<p class="status" role="status" aria-live="polite"></p></form></div>';
+  const form=box.querySelector("form");
+  form.querySelector(".cancel").onclick=()=>{box.innerHTML=previous;box.classList.remove("editing");};
+  form.onsubmit=async e=>{
+    e.preventDefault();
+    const status=form.querySelector(".status");
+    const send=form.querySelector('button[type="submit"]');
+    const fd=new FormData(form);
+    const payload={name:fd.get("name"),email:fd.get("email"),message:fd.get("message")||"",type,atelierId,weekDate:date};
+    status.textContent="Envoi en cours…";
+    send.disabled=true;
+    try{
+      const response=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitParticipation",payload})});
+      const out=await response.json();
+      if(!response.ok||out.ok!==true||!/^P-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"Erreur");
+      const confirmed=out.confirmed===true||out.status==="Confirmé";
+      const headline=confirmed?"Participation confirmée!":"Inscription reçue — en attente de confirmation";
+      const detail=confirmed
+        ?"Votre participation est confirmée. Votre nom (prénom et initiale) figurera dans le calendrier actualisé."
+        :"Le comité a reçu votre demande. Votre nom apparaîtra dans le calendrier seulement après confirmation.";
+      box.innerHTML='<div class="signup-result" role="status"><strong>'+headline+'</strong><p>'+detail+'</p>'+
+        '<button class="compact-action secondary" type="button">Retour au calendrier</button></div>';
+      box.querySelector("button").onclick=()=>loadDates();
+    }catch(err){
+      status.textContent="Impossible de vérifier l’envoi pour le moment. Avant de réessayer, écrivez à ateliersetoilefilante@gmail.com pour éviter les doublons.";
+      send.disabled=false;
+    }
+  };
+}
 document.querySelectorAll(".suggestionForm").forEach(form=>form.addEventListener("submit",async e=>{e.preventDefault();const st=form.querySelector(".status"),fd=new FormData(form),payload={type:form.dataset.type,name:fd.get("name")||"",email:fd.get("email")||"",suggestion:fd.get("suggestion"),coordinate:fd.get("coordinate")||"Non",notes:fd.get("notes")||""};st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitSuggestion",payload})});const out=await r.json();if(out.ok!==true)throw new Error();form.innerHTML="<p><strong>Merci!</strong> Votre idée a été envoyée au comité Ateliers.</p>";}catch(x){st.textContent="La boîte à idées doit encore être activée côté serveur. Vous pouvez aussi écrire à ateliersetoilefilante@gmail.com.";}}));
 document.getElementById("meetingForm").addEventListener("submit",async e=>{e.preventDefault();const st=document.getElementById("meetingStatus"),fd=new FormData(e.target),payload={email:fd.get("email"),list:"Rencontre ouverte Ateliers"};st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitMailingInterest",payload})});const out=await r.json();if(out.ok!==true)throw new Error();e.target.style.display="none";st.textContent="Merci! Nous vous enverrons les détails lorsque la rencontre sera confirmée.";}catch(x){st.textContent="L’inscription en ligne doit encore être activée. Vous pouvez aussi écrire à ateliersetoilefilante@gmail.com.";}});
-document.getElementById("atelierForm").addEventListener("submit",async e=>{e.preventDefault();const st=document.getElementById("status");if(!API_URL){st.textContent="Le nouveau formulaire est prêt, mais la connexion au portail doit encore être activée avant l’envoi.";return;}const fd=new FormData(e.target);const payload=Object.fromEntries(fd.entries());payload.preferredDates=fd.getAll("preferredDates");if(!payload.preferredDates.length){st.textContent="Veuillez choisir au moins une date.";return;}st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitProposal",payload})});const out=await r.json();if(!r.ok||out.ok!==true||!/^A-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"La soumission n’a pas été confirmée par le serveur.");e.target.innerHTML=`<section class="card" id="successCard"><h2>Merci! Votre proposition a été envoyée.</h2><p>Un courriel de confirmation vous a été envoyé. Le comité Ateliers vous contactera ensuite pour confirmer la date, le local et les rôles.</p><p class="muted">Pour toute question ou modification, écrivez-nous à <strong>ateliersetoilefilante@gmail.com</strong>.</p><div class="actions"><button type="button" class="secondary" onclick="location.reload()">Proposer un autre atelier</button></div></section>`;document.getElementById("successCard").scrollIntoView({behavior:"smooth",block:"start"});}catch(err){st.textContent="Impossible d’envoyer la proposition pour le moment. Veuillez réessayer ou écrire au comité Ateliers.";}});loadDates();
+document.getElementById("atelierForm").addEventListener("submit",async e=>{e.preventDefault();const st=document.getElementById("status");if(!API_URL){st.textContent="Le nouveau formulaire est prêt, mais la connexion au portail doit encore être activée avant l’envoi.";return;}const fd=new FormData(e.target);const payload=Object.fromEntries(fd.entries());payload.preferredDates=fd.getAll("preferredDates");if(!payload.preferredDates.length){st.textContent="Veuillez choisir au moins une date.";return;}st.textContent="Envoi en cours…";try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"submitProposal",payload})});const out=await r.json();if(!r.ok||out.ok!==true||!/^A-\d{4,}$/.test(String(out.id||"")))throw new Error(out.message||"La soumission n’a pas été confirmée par le serveur.");const confirmed=out.confirmed===true||out.status==="Confirmé";const heading=confirmed?"Votre atelier est confirmé"+(out.confirmedDate?" pour le "+escHtml(fmt(out.confirmedDate)):"")+"!":"Merci! Votre proposition a été reçue.";const details=confirmed?"La date est réservée. Retrouvez votre atelier dans le calendrier après actualisation.":"Le comité Ateliers examinera votre proposition et vous confirmera la date et les détails.";const mail=out.emailSent===true?"<p>Un courriel de confirmation vous a été envoyé.</p>":"";e.target.innerHTML=`<section class="card" id="successCard"><h2>${heading}</h2><p>${details}</p>${mail}<p class="muted">Pour toute question ou modification, écrivez-nous à <strong>ateliersetoilefilante@gmail.com</strong>.</p><div class="actions"><button type="button" class="secondary" onclick="location.reload()">Proposer un autre atelier</button></div></section>`;document.getElementById("successCard").scrollIntoView({behavior:"smooth",block:"start"});}catch(err){st.textContent="Impossible d’envoyer la proposition pour le moment. Veuillez réessayer ou écrire au comité Ateliers.";}});loadDates();
 </script>
 </body></html>
