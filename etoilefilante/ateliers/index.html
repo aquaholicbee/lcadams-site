@@ -111,7 +111,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
 <section class="card">
 <h2>4. Autre chose?</h2>
 <label>Notes pour le comité<textarea name="notes" placeholder="Contraintes, questions, contexte ou autres informations utiles…"></textarea></label>
-<div class="note">Une soumission est une <strong>proposition</strong>, et non une inscription confirmée. Le comité Ateliers vous confirmera ensuite la date, le local et les rôles.</div>
+<div class="note">Si une plage et le local demandé sont disponibles, votre atelier peut être <strong>confirmé automatiquement</strong> pour l’une des dates proposées. Sinon, le comité Ateliers vous contactera pour valider les détails.</div>
 <div class="actions"><button type="submit">Envoyer ma proposition</button></div>
 <div id="status" class="status" aria-live="polite"></div>
 </section>
@@ -133,7 +133,7 @@ function renderUpcoming(d){
  if(!weeks.length){el.innerHTML='<p class="muted">Aucune semaine à venir à afficher pour le moment.</p>';return;}
  el.innerHTML=weeks.map(w=>{
    const ateliers=(w.ateliers||[]);
-   const atelierHtml=ateliers.length?ateliers.map(a=>{
+   const atelierHtml=w.studentLedOnly?'<div class="empty-week"><p><strong>Ateliers animés par les élèves uniquement.</strong></p><p class="muted">Cette semaine, nous cherchons surtout des parents pour la supervision.</p></div>':ateliers.length?ateliers.map(a=>{
      const count=adultAnimatorCount(a),spots=Math.max(0,3-count);
      const names=[a.lead,a.parentCoanimators].filter(Boolean).join(", ");
      const help=spots>0?'<div class="cohelp"><span>'+spots+' place'+(spots===1?'':'s')+' pour co-animer</span><button class="compact-action" type="button" onclick="offerCoanimate(\''+String(a.id).replace(/'/g,"\\'")+'\',\''+w.date+'\',this)">Je peux co-animer</button></div>':'<span class="status-complete">✓ Équipe complète</span>';
@@ -141,7 +141,7 @@ function renderUpcoming(d){
    }).join(""):'<div class="empty-week"><p class="muted">Aucun atelier confirmé pour le moment.</p>'+(w.proposalOpen?'<button class="compact-action" type="button" onclick="openProposal(\''+w.date+'\')">💡 Proposer un atelier pour cette date</button>':'<p class="hint">La période de proposition régulière est fermée pour cette date. Écrivez-nous si vous souhaitez quand même proposer quelque chose.</p>')+'</div>';
    const sup=Number(w.childSupervisorsRemaining)>0?'<div class="supervision"><div><strong>👀 Supervision des ateliers d’élèves</strong><p>'+w.childSupervisorsRemaining+' parent'+(w.childSupervisorsRemaining===1?'':'s')+' recherché'+(w.childSupervisorsRemaining===1?'':'s')+'.</p></div><button class="compact-action" type="button" onclick="offerSupervision(\''+w.date+'\',this)">Je peux superviser</button></div>':'<div class="supervision"><div><strong>👀 Supervision des ateliers d’élèves</strong><p>Besoins de supervision comblés.</p></div></div>';
    const extra=Number(w.confirmedCount)>=4?'<p class="hint week-extra"><strong>Vous aimeriez quand même animer cette semaine?</strong> Une 5e plage peut parfois être ouverte selon les locaux et l’organisation. Écrivez-nous à <a href="mailto:ateliersetoilefilante@gmail.com">ateliersetoilefilante@gmail.com</a>.</p>':'';
-   return '<section class="week-block"><h3>'+fmt(w.date)+'</h3><h4>Ateliers confirmés</h4>'+atelierHtml+sup+extra+'</section>';
+   return '<section class="week-block"><h3>'+fmt(w.date)+'</h3><h4>'+(w.studentLedOnly?'Ateliers d’élèves':'Ateliers confirmés')+'</h4>'+atelierHtml+sup+extra+'</section>';
  }).join("");
 }
 function adultAnimatorCount(a){let n=a.lead?1:0;if(a.parentCoanimators)n+=String(a.parentCoanimators).split(/\s*,\s*|\s*;\s*/).filter(Boolean).length;return n;}
