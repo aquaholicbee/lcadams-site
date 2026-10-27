@@ -72,6 +72,7 @@ button{border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:70
 .signup-result p{margin:8px 0 12px}
 .status-nohelp{display:inline-flex;align-items:center;font-size:.9rem;color:var(--m);background:#f0f2f1;border:1px solid var(--l);border-radius:999px;padding:6px 10px;white-space:nowrap}
 .bazar-planning{margin:18px 0;max-width:100%}.bazar-planning .miniForm{margin-top:14px}.bazar-planning textarea{min-height:68px}
+.bazar-focus{background:var(--s);border-left:3px solid var(--g);border-radius:8px;padding:11px 14px;margin:12px 0}.bazar-focus p{margin:5px 0 0;font-size:.94rem}
 </style>
 </head>
 <body>
@@ -152,7 +153,7 @@ function renderUpcoming(d){
    }).join(""):'<div class="empty-week"><p class="muted">Aucun atelier confirmé pour le moment.</p>'+(w.proposalOpen?'<button class="compact-action" type="button" onclick="openProposal(\''+w.date+'\')">💡 Proposer un atelier pour cette date</button>':'<p class="hint">La période de proposition régulière est fermée pour cette date. Écrivez-nous si vous souhaitez quand même proposer quelque chose.</p>')+'</div>';
    const sup=Number(w.childSupervisorsRemaining)>0?'<div class="supervision"><div><strong>👀 Supervision des ateliers d’élèves</strong><p>'+w.childSupervisorsRemaining+' parent'+(w.childSupervisorsRemaining===1?'':'s')+' recherché'+(w.childSupervisorsRemaining===1?'':'s')+'.</p></div><button class="compact-action" type="button" onclick="offerSupervision(\''+w.date+'\',this)">Je peux superviser</button></div>':'<div class="supervision"><div><strong>👀 Supervision des ateliers d’élèves</strong><p>Besoins de supervision comblés.</p></div></div>';
    const extra=Number(w.confirmedCount)>=4?'<p class="hint week-extra"><strong>Vous aimeriez quand même animer cette semaine?</strong> Une 5e plage peut parfois être ouverte selon les locaux et l’organisation. Écrivez-nous à <a href="mailto:ateliersetoilefilante@gmail.com">ateliersetoilefilante@gmail.com</a>.</p>':'';
-   return '<section class="week-block" data-week-date="'+w.date+'"><h3>'+fmt(w.date)+'</h3><h4>'+(w.studentLedOnly?'Ateliers d’élèves':'Ateliers confirmés')+'</h4>'+atelierHtml+sup+extra+'</section>';
+   const bazarNote=w.date==='2026-12-09'?'<div class="bazar-focus"><strong>🎨 Ateliers Bazar — créations à fabriquer</strong><p>Pour cette dernière période d’ateliers parents avant le Bazar du vendredi 11 décembre, nous recherchons des activités pour fabriquer avec les élèves des objets à présenter ou à vendre au Bazar.</p></div>':w.date==='2026-11-25'?'<div class="bazar-focus"><strong>🎨 Idéalement : ateliers de création pour le Bazar</strong><p>Nous aimerions consacrer cette semaine à des bricolages et créations réalisés avec les élèves pour le Bazar du 11 décembre.</p></div>':'';return '<section class="week-block" data-week-date="'+w.date+'"><h3>'+fmt(w.date)+'</h3>'+bazarNote+'<h4>'+(w.studentLedOnly?'Ateliers d’élèves':'Ateliers confirmés')+'</h4>'+atelierHtml+sup+extra+'</section>';
  }).join("");
  const planningCard=document.getElementById("bazarPlanningTemplate");
  if(planningCard){
