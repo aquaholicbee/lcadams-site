@@ -152,11 +152,12 @@ function renderUpcoming(d){
    const ateliers=(w.ateliers||[]);
    const atelierHtml=w.studentLedOnly?'<div class="empty-week"><p><strong>Ateliers animés par les élèves uniquement.</strong></p><p class="muted">Cette semaine, nous cherchons surtout des parents pour la supervision.</p></div>':ateliers.length?ateliers.map(a=>{
      const count=adultAnimatorCount(a),spots=Math.max(0,3-count);
+     const space=a.id==="A-0031"?"Local d’arts plastiques":a.id==="A-0032"?"Local avec évier demandé":a.space;
      const names=[a.lead,a.parentCoanimators].filter(Boolean).join(", ");
      const planning=/^Planification du bazar/.test(a.title||"");
      const noHelp=["A-0027","A-0031","A-0033"].includes(a.id);
      const help=planning?'<a href="mailto:ateliersetoilefilante@gmail.com" class="hint">Prévenir le comité pour participer</a>':noHelp||a.coanimationOpen===false?'<span class="status-nohelp">Aucune co-animation recherchée</span>':spots>0?'<div class="cohelp"><span>'+spots+' place'+(spots===1?'':'s')+' pour co-animer</span><button class="compact-action" type="button" onclick="offerCoanimate(\''+String(a.id).replace(/'/g,"\\'")+'\',\''+w.date+'\',this)">Je peux co-animer</button></div>':'<span class="status-complete">✓ Équipe complète</span>';
-     return '<div class="atelier-item"><div class="atelier-main"><strong>'+escHtml(a.title)+'</strong><span class="muted">'+escHtml(names||"Animation à confirmer")+'</span>'+(a.space&&a.space!=="Flexible"?'<span class="hint">Local : '+escHtml(a.space)+'</span>':'')+'</div>'+help+'</div>';
+     return '<div class="atelier-item"><div class="atelier-main"><strong>'+escHtml(a.title)+'</strong><span class="muted">'+escHtml(names||"Animation à confirmer")+'</span>'+(space&&space!=="Flexible"?'<span class="hint">Local : '+escHtml(space)+'</span>':'')+'</div>'+help+'</div>';
    }).join(""):'<div class="empty-week"><p class="muted">Aucun atelier confirmé pour le moment.</p></div>';
    const confirmedCount=Number.isFinite(Number(w.confirmedCount))?Number(w.confirmedCount):ateliers.length;
    const proposalHtml=w.studentLedOnly?'':confirmedCount>=4?'':w.proposalOpen?'<div class="actions"><button class="compact-action" type="button" onclick="openProposal(&quot;'+w.date+'&quot;)">💡 Proposer un atelier pour cette date</button></div>':'<p class="hint">La période de proposition régulière est fermée pour cette date. Écrivez-nous si vous souhaitez quand même proposer quelque chose.</p>';
